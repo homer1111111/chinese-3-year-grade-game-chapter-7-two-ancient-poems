@@ -146,7 +146,6 @@ function shuffle(array) {
 }
 
 // 课文模式
-
 function startArticleMode() {
     console.log('开始课文模式...');
     practiceMode.style.display = 'none';
@@ -170,20 +169,30 @@ function playFullArticle() {
     fullAudio.load();
     console.log('全篇音频源设置为:', fullAudio.src);
 
-    fullAudio.play()
-        .then(() => {
-            console.log('全篇音频播放成功');
-            isAudioPlaying = true;
-            setTimeout(() => {
-                if (isAudioPlaying) {
-                    document.addEventListener('click', stopAudioOnClick);
-                }
-            }, 500);
-        })
-        .catch(error => {
-            console.error('全篇音频播放失败:', error);
-            alert('无法播放课文音频，请检查音频文件路径或浏览器权限设置。\n错误: ' + error.message);
-        });
+    // 监听音频加载完成事件
+    fullAudio.addEventListener('canplay', function onCanPlay() {
+        fullAudio.removeEventListener('canplay', onCanPlay); // 移除监听，避免重复触发
+        fullAudio.play()
+            .then(() => {
+                console.log('全篇音频播放成功');
+                isAudioPlaying = true;
+                setTimeout(() => {
+                    if (isAudioPlaying) {
+                        document.addEventListener('click', stopAudioOnClick);
+                    }
+                }, 500);
+            })
+            .catch(error => {
+                console.error('全篇音频播放失败:', error);
+                alert('无法播放课文音频，请检查音频文件路径或浏览器权限设置。\n错误: ' + error.message);
+            });
+    }, { once: true });
+
+    // 监听加载错误
+    fullAudio.addEventListener('error', function onError() {
+        console.error('全篇音频加载失败:', fullAudio.error);
+        alert('全篇音频加载失败，请检查音频文件是否存在。\n错误: ' + fullAudio.error.message);
+    }, { once: true });
 }
 
 function playSegment(articleId) {
@@ -220,26 +229,37 @@ function playSegment(articleId) {
     segmentAudio.src = segment.audio;
     segmentAudio.load();
     console.log('分段音频源设置为:', segmentAudio.src);
-    segmentAudio.play()
-        .then(() => {
-            console.log('分段音频播放成功:', segment.audio);
-            isAudioPlaying = true;
-            // 音频播放结束时移除高亮
-            segmentAudio.onended = () => {
-                newHighlightedSegment.classList.remove('highlight');
-                currentHighlightedSegment = null;
-                isAudioPlaying = false;
-            };
-        })
-        .catch(error => {
-            console.error('分段音频播放失败:', error);
-            if (error.message.includes('interrupted by a call to pause')) {
-                console.warn('播放被中断，正在重试...');
-                segmentAudio.play();
-            } else {
-                alert('无法播放分段音频，请检查音频文件或网络连接。\n错误: ' + error.message);
-            }
-        });
+
+    // 监听音频加载完成事件
+    segmentAudio.addEventListener('canplay', function onCanPlay() {
+        segmentAudio.removeEventListener('canplay', onCanPlay); // 移除监听，避免重复触发
+        segmentAudio.play()
+            .then(() => {
+                console.log('分段音频播放成功:', segment.audio);
+                isAudioPlaying = true;
+                // 音频播放结束时移除高亮
+                segmentAudio.onended = () => {
+                    newHighlightedSegment.classList.remove('highlight');
+                    currentHighlightedSegment = null;
+                    isAudioPlaying = false;
+                };
+            })
+            .catch(error => {
+                console.error('分段音频播放失败:', error);
+                if (error.message.includes('interrupted by a call to pause')) {
+                    console.warn('播放被中断，正在重试...');
+                    segmentAudio.play();
+                } else {
+                    alert('无法播放分段音频，请检查音频文件或网络连接。\n错误: ' + error.message);
+                }
+            });
+    }, { once: true });
+
+    // 监听加载错误
+    segmentAudio.addEventListener('error', function onError() {
+        console.error('分段音频加载失败:', segmentAudio.error);
+        alert('分段音频加载失败，请检查音频文件是否存在。\n错误: ' + segmentAudio.error.message);
+    }, { once: true });
 }
 
 function stopAudioOnClick(event) {
@@ -595,7 +615,7 @@ function fixLevel1Errors() {
         const zone = document.createElement('div');
         zone.className = 'drop-zone';
         zone.setAttribute('data-pinyin', word.pinyin);
-        zone.textContent = word.pinyin;
+        zone.innerHTML = `<span class="pinyin-text">${word.pinyin}</span>`;
         pinyinContainer.appendChild(zone);
     });
     bindTapEvents();
@@ -714,7 +734,7 @@ function bindTapEvents() {
                     selectedCard.classList.add('correct');
                     zone.classList.remove('selected');
                     zone.classList.add('correct');
-                    zone.textContent = `${hanzi} - ${pinyin}`;
+                    zone.innerHTML = `<span>${hanzi} - ${pinyin}</span>`;
                     selectedCard.style.display = 'none';
                     selectedCard = null;
 
@@ -727,7 +747,7 @@ function bindTapEvents() {
                     selectedCard.classList.add('correct');
                     zone.classList.remove('selected');
                     zone.classList.add('correct');
-                    zone.textContent = `${hanzi} - ${pinyin}`;
+                    zone.innerHTML = `<span>${hanzi} - ${pinyin}</span>`;
                     selectedCard.style.display = 'none';
                     selectedCard = null;
 
