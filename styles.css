@@ -231,18 +231,29 @@ button {
 .card, .drop-zone {
     width: 60px;
     height: 60px;
-    line-height: 60px;
+    line-height: 1.2;
     margin: 10px;
     border: 2px solid #ccc;
-    font-size: 24px;
+    font-size: 16px;
     text-align: center;
     background: #f9f9f9;
     transition: background-color 0.3s;
+    overflow-wrap: break-word;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
 }
 
 .drop-zone {
     border-style: dashed;
     border-color: #666;
+}
+
+.drop-zone .pinyin-text {
+    font-size: 14px;
+    line-height: 1.1;
 }
 
 .card.selected {
@@ -487,6 +498,8 @@ button {
 
 div.segment.highlight {
     font-size: 5px;
+    background-color: #FFFF99;
+    border: 1px solid #FF9800;
 }
 
 #article-mode button {
@@ -574,8 +587,15 @@ div.segment.highlight {
     .card, .drop-zone {
         width: 18vw;
         height: 18vw;
-        line-height: 18vw;
-        font-size: 7vw;
+        line-height: 1.2;
+        font-size: 4vw;
+        margin: 5px;
+        overflow-wrap: break-word;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2px;
     }
     #celebration h2 {
         font-size: 6vw;
@@ -668,5 +688,7 @@ div.segment.highlight {
     }
     div.segment.highlight {
         font-size: 5px;
+        background-color: #FFFF99;
+        border: 1px solid #FF9800;
     }
 }
