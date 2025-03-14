@@ -10,15 +10,15 @@
 <body>
     <h1>第七课 - 古诗二首 (Chapter 7 - Two Ancient Poems)</h1>
     <div id="mode-selection" class="persistent">
-        <button onclick="startArticleMode()">课文模式 (Article Mode)</button>
-        <button onclick="startSingleWordMode()">单字模式 (Single Word Mode)</button>
-        <button onclick="startPracticeMode()">练习模式 (Practice Mode)</button>
-        <button onclick="startGameMode()">游戏模式 (Game Mode)</button>
+        <button>课文模式 (Article Mode)</button>
+        <button>单字模式 (Single Word Mode)</button>
+        <button>练习模式 (Practice Mode)</button>
+        <button>游戏模式 (Game Mode)</button>
     </div>
     <div id="article-mode" style="display: none;">
         <h2>课文模式 (Article Mode)</h2>
         <div id="reading-mode" style="display: none;">
-            <button onclick="playFullArticle()">播放课文 (Play Article)</button>
+            <button id="play-article">播放课文 (Play Article)</button>
             <audio id="full-audio" style="display: none;" preload="auto">
                 <source src="audio/full_article.mp3" type="audio/mp3">
                 您的浏览器不支持音频播放。
@@ -104,31 +104,5 @@
     <audio id="celebrate-sound" src="https://freesound.org/data/previews/159/159402_1676144-lq.mp3" preload="auto"></audio>
     <audio id="word-audio" style="display: none;" preload="auto"></audio>
     <script src="script.js"></script>
-    <script>
-        // 预加载所有音频文件
-        const audioFiles = [
-            'audio/full_article.mp3',
-            'audio/segment_1.mp3',
-            'audio/segment_2.mp3',
-            'audio/segment_3.mp3',
-            'audio/segment_4.mp3',
-            'audio/segment_5.mp3',
-            'audio/segment_6.mp3',
-            'audio/segment_7.mp3',
-            'audio/segment_8.mp3',
-            'audio/segment_9.mp3',
-            'audio/segment_10.mp3',
-            'audio/segment_11.mp3',
-            'audio/segment_12.mp3',
-            'audio/segment_13.mp3',
-            'audio/segment_14.mp3'
-        ];
-
-        audioFiles.forEach(file => {
-            const audio = new Audio(file);
-            audio.preload = 'auto';
-            audio.load();
-        });
-    </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'920053179adfbff6',t:'MTc0MTkxOTE2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
