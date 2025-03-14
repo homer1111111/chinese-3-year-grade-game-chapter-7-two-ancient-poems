@@ -13,7 +13,7 @@ let practiceWords = [];
 let singleHanziWriter = null;
 let isFlipped = false;
 let isAudioPlaying = false;
-let isAudioEnabled = false; // 新增标志，追踪音频是否启用
+let isAudioEnabled = false;
 
 const modeSelection = document.querySelector('#mode-selection.persistent');
 const currentScoreDisplay = document.getElementById('current-score');
@@ -55,7 +55,6 @@ const celebrateSound = document.getElementById('celebrate-sound');
 const wordAudio = document.getElementById('word-audio');
 let currentHighlightedSegment = null;
 
-// 预加载音频缓存
 const audioCache = {};
 
 highestScoreDisplay.textContent = `历史最高分数: ${highestScore} (Highest Score: ${highestScore})`;
@@ -83,14 +82,62 @@ const allWords = {
         { hanzi: '首', pinyin: 'shǒu', meaningCn: '首', meaningEn: 'head, first', strokeCount: 9, animation: 'https://bishun.gjcha.com/9996.gif', audio: 'audio/words/首.mp3' },
         { hanzi: '静', pinyin: 'jìng', meaningCn: '安静', meaningEn: 'quiet, still', strokeCount: 14, animation: 'https://bishun.gjcha.com/9759.gif', audio: 'audio/words/静.mp3' }
     ],
-    // ... 其他级别数据保持不变
+    'level-1-2': [
+        { hanzi: '床', pinyin: 'chuáng', meaningCn: '床', meaningEn: 'bed', strokeCount: 7, animation: 'https://bishun.gjcha.com/5E8A.gif', audio: 'audio/words/床.mp3' },
+        { hanzi: '疑', pinyin: 'yí', meaningCn: '疑惑', meaningEn: 'doubt, suspect', strokeCount: 14, animation: 'https://bishun.gjcha.com/7591.gif', audio: 'audio/words/疑.mp3' },
+        { hanzi: '举', pinyin: 'jǔ', meaningCn: '举起', meaningEn: 'lift, raise', strokeCount: 9, animation: 'https://bishun.gjcha.com/4E3E.gif', audio: 'audio/words/举.mp3' }
+    ],
+    'level-1-3': [
+        { hanzi: '望', pinyin: 'wàng', meaningCn: '眺望', meaningEn: 'look at, hope', strokeCount: 11, animation: 'https://bishun.gjcha.com/671B.gif', audio: 'audio/words/望.mp3' },
+        { hanzi: '低', pinyin: 'dī', meaningCn: '低', meaningEn: 'low', strokeCount: 7, animation: 'https://bishun.gjcha.com/4F4E.gif', audio: 'audio/words/低.mp3' }
+    ],
+    'level-2-1': [
+        { hanzi: '乡', pinyin: 'xiāng', meaningCn: '家乡', meaningEn: 'hometown, village', strokeCount: 3, animation: 'https://bishun.gjcha.com/4E61.gif', audio: 'audio/words/乡.mp3' },
+        { hanzi: '楼', pinyin: 'lóu', meaningCn: '楼房', meaningEn: 'building, floor', strokeCount: 13, animation: 'https://bishun.gjcha.com/697C.gif', audio: 'audio/words/楼.mp3' },
+        { hanzi: '千', pinyin: 'qiān', meaningCn: '千', meaningEn: 'thousand', strokeCount: 3, animation: 'https://bishun.gjcha.com/5343.gif', audio: 'audio/words/千.mp3' }
+    ],
+    'level-2-2': [
+        { hanzi: '更', pinyin: 'gèng', meaningCn: '更', meaningEn: 'more, even more', strokeCount: 7, animation: 'https://bishun.gjcha.com/66F4.gif', audio: 'audio/words/更.mp3' },
+        { hanzi: '层', pinyin: 'céng', meaningCn: '层', meaningEn: 'layer, floor', strokeCount: 7, animation: 'https://bishun.gjcha.com/5C42.gif', audio: 'audio/words/层.mp3' }
+    ],
+    'level-2-3': [
+        { hanzi: '诗', pinyin: 'shī', meaningCn: '诗歌', meaningEn: 'poem', strokeCount: 8, animation: 'https://bishun.gjcha.com/8BD7.gif', audio: 'audio/words/诗.mp3' },
+        { hanzi: '首', pinyin: 'shǒu', meaningCn: '首', meaningEn: 'head, first', strokeCount: 9, animation: 'https://bishun.gjcha.com/9996.gif', audio: 'audio/words/首.mp3' }
+    ],
+    'level-3-1': [
+        { hanzi: '静', pinyin: 'jìng', meaningCn: '安静', meaningEn: 'quiet, still', strokeCount: 14, animation: 'https://bishun.gjcha.com/9759.gif', audio: 'audio/words/静.mp3' },
+        { hanzi: '床', pinyin: 'chuáng', meaningCn: '床', meaningEn: 'bed', strokeCount: 7, animation: 'https://bishun.gjcha.com/5E8A.gif', audio: 'audio/words/床.mp3' },
+        { hanzi: '疑', pinyin: 'yí', meaningCn: '疑惑', meaningEn: 'doubt, suspect', strokeCount: 14, animation: 'https://bishun.gjcha.com/7591.gif', audio: 'audio/words/疑.mp3' },
+        { hanzi: '举', pinyin: 'jǔ', meaningCn: '举起', meaningEn: 'lift, raise', strokeCount: 9, animation: 'https://bishun.gjcha.com/4E3E.gif', audio: 'audio/words/举.mp3' }
+    ],
+    'level-3-2': [
+        { hanzi: '望', pinyin: 'wàng', meaningCn: '眺望', meaningEn: 'look at, hope', strokeCount: 11, animation: 'https://bishun.gjcha.com/671B.gif', audio: 'audio/words/望.mp3' },
+        { hanzi: '低', pinyin: 'dī', meaningCn: '低', meaningEn: 'low', strokeCount: 7, animation: 'https://bishun.gjcha.com/4F4E.gif', audio: 'audio/words/低.mp3' },
+        { hanzi: '乡', pinyin: 'xiāng', meaningCn: '家乡', meaningEn: 'hometown, village', strokeCount: 3, animation: 'https://bishun.gjcha.com/4E61.gif', audio: 'audio/words/乡.mp3' },
+        { hanzi: '楼', pinyin: 'lóu', meaningCn: '楼房', meaningEn: 'building, floor', strokeCount: 13, animation: 'https://bishun.gjcha.com/697C.gif', audio: 'audio/words/楼.mp3' }
+    ],
+    'level-3-3': [
+        { hanzi: '千', pinyin: 'qiān', meaningCn: '千', meaningEn: 'thousand', strokeCount: 3, animation: 'https://bishun.gjcha.com/5343.gif', audio: 'audio/words/千.mp3' },
+        { hanzi: '更', pinyin: 'gèng', meaningCn: '更', meaningEn: 'more, even more', strokeCount: 7, animation: 'https://bishun.gjcha.com/66F4.gif', audio: 'audio/words/更.mp3' },
+        { hanzi: '层', pinyin: 'céng', meaningCn: '层', meaningEn: 'layer, floor', strokeCount: 7, animation: 'https://bishun.gjcha.com/5C42.gif', audio: 'audio/words/层.mp3' },
+        { hanzi: '诗', pinyin: 'shī', meaningCn: '诗歌', meaningEn: 'poem', strokeCount: 8, animation: 'https://bishun.gjcha.com/8BD7.gif', audio: 'audio/words/诗.mp3' }
+    ]
 };
 
 const allUniqueWords = [
     { hanzi: '诗', pinyin: 'shī', meaningCn: '诗歌', meaningEn: 'poem', strokeCount: 8, animation: 'https://bishun.gjcha.com/8BD7.gif', audio: 'audio/words/诗.mp3' },
     { hanzi: '首', pinyin: 'shǒu', meaningCn: '首', meaningEn: 'head, first', strokeCount: 9, animation: 'https://bishun.gjcha.com/9996.gif', audio: 'audio/words/首.mp3' },
     { hanzi: '静', pinyin: 'jìng', meaningCn: '安静', meaningEn: 'quiet, still', strokeCount: 14, animation: 'https://bishun.gjcha.com/9759.gif', audio: 'audio/words/静.mp3' },
-    // ... 其他单词数据保持不变
+    { hanzi: '床', pinyin: 'chuáng', meaningCn: '床', meaningEn: 'bed', strokeCount: 7, animation: 'https://bishun.gjcha.com/5E8A.gif', audio: 'audio/words/床.mp3' },
+    { hanzi: '疑', pinyin: 'yí', meaningCn: '疑惑', meaningEn: 'doubt, suspect', strokeCount: 14, animation: 'https://bishun.gjcha.com/7591.gif', audio: 'audio/words/疑.mp3' },
+    { hanzi: '举', pinyin: 'jǔ', meaningCn: '举起', meaningEn: 'lift, raise', strokeCount: 9, animation: 'https://bishun.gjcha.com/4E3E.gif', audio: 'audio/words/举.mp3' },
+    { hanzi: '望', pinyin: 'wàng', meaningCn: '眺望', meaningEn: 'look at, hope', strokeCount: 11, animation: 'https://bishun.gjcha.com/671B.gif', audio: 'audio/words/望.mp3' },
+    { hanzi: '低', pinyin: 'dī', meaningCn: '低', meaningEn: 'low', strokeCount: 7, animation: 'https://bishun.gjcha.com/4F4E.gif', audio: 'audio/words/低.mp3' },
+    { hanzi: '乡', pinyin: 'xiāng', meaningCn: '家乡', meaningEn: 'hometown, village', strokeCount: 3, animation: 'https://bishun.gjcha.com/4E61.gif', audio: 'audio/words/乡.mp3' },
+    { hanzi: '楼', pinyin: 'lóu', meaningCn: '楼房', meaningEn: 'building, floor', strokeCount: 13, animation: 'https://bishun.gjcha.com/697C.gif', audio: 'audio/words/楼.mp3' },
+    { hanzi: '千', pinyin: 'qiān', meaningCn: '千', meaningEn: 'thousand', strokeCount: 3, animation: 'https://bishun.gjcha.com/5343.gif', audio: 'audio/words/千.mp3' },
+    { hanzi: '更', pinyin: 'gèng', meaningCn: '更', meaningEn: 'more, even more', strokeCount: 7, animation: 'https://bishun.gjcha.com/66F4.gif', audio: 'audio/words/更.mp3' },
+    { hanzi: '层', pinyin: 'céng', meaningCn: '层', meaningEn: 'layer, floor', strokeCount: 7, animation: 'https://bishun.gjcha.com/5C42.gif', audio: 'audio/words/层.mp3' }
 ];
 
 function shuffle(array) {
@@ -129,9 +176,36 @@ function enableAudio() {
             audioCache[file] = audio;
         });
 
+        // 启用音频时播放一个无声音频以激活音频上下文
+        const silentAudio = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
+        silentAudio.play().catch(error => console.error('无声音频播放失败:', error));
+
         isAudioEnabled = true;
         console.log('音频已启用');
     }
+}
+
+// 显示音频启用提示
+function showAudioPrompt(callback) {
+    const prompt = document.createElement('div');
+    prompt.textContent = '请点击页面以启用音频播放';
+    prompt.style.position = 'fixed';
+    prompt.style.top = '10px';
+    prompt.style.left = '50%';
+    prompt.style.transform = 'translateX(-50%)';
+    prompt.style.background = 'rgba(0, 0, 0, 0.7)';
+    prompt.style.color = 'white';
+    prompt.style.padding = '10px';
+    prompt.style.borderRadius = '5px';
+    prompt.style.zIndex = '1000';
+    document.body.appendChild(prompt);
+
+    document.addEventListener('click', function enableAudioPrompt() {
+        document.body.removeChild(prompt);
+        enableAudio();
+        if (callback) callback(); // 执行回调函数（如播放音频）
+        document.removeEventListener('click', enableAudioPrompt);
+    }, { once: true });
 }
 
 // 课文模式
@@ -144,11 +218,16 @@ function startArticleMode() {
     readingMode.style.display = 'block';
     articleContent.innerHTML = '';
     showArticleContent();
+
+    // 绑定播放按钮事件
+    const playButton = document.getElementById('play-article');
+    playButton.removeEventListener('click', playFullArticle);
+    playButton.addEventListener('click', playFullArticle);
 }
 
 function playFullArticle() {
     if (!isAudioEnabled) {
-        showAudioPrompt();
+        showAudioPrompt(playFullArticle);
         return;
     }
 
@@ -160,7 +239,7 @@ function playFullArticle() {
 
     fullAudio.src = 'audio/full_article.mp3';
     if (audioCache[fullAudio.src]) {
-        fullAudio = audioCache[fullAudio.src];
+        fullAudio.src = audioCache[fullAudio.src].src; // 使用缓存的音频源
     }
 
     fullAudio.play()
@@ -181,7 +260,7 @@ function playFullArticle() {
 
 function playSegment(articleId) {
     if (!isAudioEnabled) {
-        showAudioPrompt();
+        showAudioPrompt(() => playSegment(articleId));
         return;
     }
 
@@ -210,15 +289,13 @@ function playSegment(articleId) {
     console.log('高亮更新完成，时间:', performance.now() - startTime);
 
     segmentAudio.src = segment.audio;
-    console.log('音频源设置完成，时间:', performance.now() - startTime);
-
     if (audioCache[segment.audio]) {
-        segmentAudio = audioCache[segment.audio];
+        segmentAudio.src = audioCache[segment.audio].src; // 使用缓存的音频源
     }
 
     segmentAudio.play()
         .then(() => {
-            console.log('音频播放成功，时间:', performance.now() - startTime);
+            console.log('分段音频播放成功，时间:', performance.now() - startTime);
             isAudioPlaying = true;
             segmentAudio.onended = () => {
                 newHighlightedSegment.classList.remove('highlight');
@@ -227,7 +304,7 @@ function playSegment(articleId) {
             };
         })
         .catch(error => {
-            console.error('音频播放失败:', error, '时间:', performance.now() - startTime);
+            console.error('分段音频播放失败:', error, '时间:', performance.now() - startTime);
             alert('无法播放分段音频: ' + error.message);
         });
 }
@@ -245,27 +322,6 @@ function stopAudioOnClick(event) {
         isAudioPlaying = false;
         document.removeEventListener('click', stopAudioOnClick);
     }
-}
-
-function showAudioPrompt() {
-    const prompt = document.createElement('div');
-    prompt.textContent = '请点击页面以启用音频播放';
-    prompt.style.position = 'fixed';
-    prompt.style.top = '10px';
-    prompt.style.left = '50%';
-    prompt.style.transform = 'translateX(-50%)';
-    prompt.style.background = 'rgba(0, 0, 0, 0.7)';
-    prompt.style.color = 'white';
-    prompt.style.padding = '10px';
-    prompt.style.borderRadius = '5px';
-    prompt.style.zIndex = '1000';
-    document.body.appendChild(prompt);
-
-    document.addEventListener('click', function enableAudioPrompt() {
-        document.body.removeChild(prompt);
-        enableAudio();
-        document.removeEventListener('click', enableAudioPrompt);
-    }, { once: true });
 }
 
 function showArticleContent() {
@@ -391,7 +447,7 @@ function showSingleWordList() {
             if (isAudioEnabled) {
                 wordAudio.play().catch(error => console.error('单词音频播放失败:', error));
             } else {
-                showAudioPrompt();
+                showAudioPrompt(() => wordAudio.play().catch(error => console.error('单词音频播放失败:', error)));
             }
             if (singleHanziWriter) {
                 singleHanziWriter.setCharacter(word.hanzi);
@@ -467,9 +523,9 @@ function showPracticeWord() {
             if (isAudioEnabled) {
                 wordAudio.play().catch(error => console.error('单词音频播放失败:', error));
             } else {
-                showAudioPrompt();
+                showAudioPrompt(() => wordAudio.play().catch(error => console.error('单词音频播放失败:', error)));
             }
-            if (clickCount === 2) {
+            if ( backedCount === 2) {
                 playButton.removeEventListener('click', handlePlayClick);
             }
         }
