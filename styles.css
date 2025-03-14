@@ -1,0 +1,672 @@
+body {
+    font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'SimSun', Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 2vh 2vw;
+    overflow-x: hidden;
+}
+
+h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 10;
+}
+
+p {
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+#mode-selection {
+    margin: 30px 0;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: nowrap;
+    align-items: center;
+    position: relative;
+    z-index: 9;
+}
+
+#mode-selection button {
+    padding: 15px 25px;
+    font-size: 22px;
+    cursor: pointer;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    min-width: 180px;
+    touch-action: manipulation;
+    flex: 0 0 auto;
+}
+
+#mode-selection button:hover {
+    background-color: #1976D2;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    touch-action: manipulation;
+}
+
+#controls {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+#controls button {
+    background-color: #2196F3;
+    color: white;
+}
+
+#controls button:last-of-type {
+    background-color: #FF5722;
+}
+
+#controls button:hover {
+    background-color: #1976D2;
+}
+
+#controls button:last-of-type:hover {
+    background-color: #F4511E;
+}
+
+#practice-mode {
+    margin-top: 20px;
+    position: relative;
+    display: none;
+}
+
+#practice-mode.active {
+    display: block;
+}
+
+#practice-mode h2 {
+    font-size: 28px;
+}
+
+.flashcard {
+    width: 200px;
+    height: 200px;
+    margin: 20px auto;
+    perspective: 1000px;
+    cursor: pointer;
+}
+
+.flashcard-front, .flashcard-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #f9f9f9;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    transition: transform 0.6s;
+}
+
+.flashcard-front {
+    transform: rotateY(0deg);
+}
+
+.flashcard-back {
+    transform: rotateY(180deg);
+}
+
+.flashcard.flipped .flashcard-front {
+    transform: rotateY(180deg);
+}
+
+.flashcard.flipped .flashcard-back {
+    transform: rotateY(0deg);
+}
+
+#flashcard-hanzi {
+    font-size: 48px;
+    margin: 0;
+}
+
+#flashcard-pinyin, #flashcard-meaning {
+    font-size: 18px;
+    margin: 5px 0;
+}
+
+#practice-mode button:nth-of-type(1) {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#practice-mode button:nth-of-type(1):hover {
+    background-color: #45a049;
+}
+
+#practice-mode button:last-of-type {
+    background-color: #FF5722;
+    color: white;
+}
+
+#practice-mode button:last-of-type:hover {
+    background-color: #F4511E;
+}
+
+#game-mode {
+    position: relative;
+    display: none;
+}
+
+#game-mode.active {
+    display: block;
+}
+
+#game-mode h2 {
+    font-size: 28px;
+}
+
+#game-mode p {
+    font-size: 18px;
+}
+
+#highest-score {
+    font-size: 18px;
+    color: #FF9800;
+    margin: 10px 0;
+}
+
+#level {
+    font-size: 18px;
+    color: #2196F3;
+    margin: 10px 0;
+}
+
+#score {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+#current-score {
+    color: #4CAF50;
+}
+
+#total-score {
+    color: #FF9800;
+}
+
+#level-complete, #level-total, #level-1-errors {
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+#level-complete h3, #level-total h3, #level-1-errors h3 {
+    font-size: 24px;
+    margin: 10px 0;
+}
+
+#level-complete p, #level-total p, #level-1-errors p {
+    font-size: 18px;
+}
+
+#wrong-words-list {
+    font-size: 24px;
+    margin: 20px 0;
+}
+
+#hanzi-container, #pinyin-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.card, .drop-zone {
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    margin: 10px;
+    border: 2px solid #ccc;
+    font-size: 24px;
+    text-align: center;
+    background: #f9f9f9;
+    transition: background-color 0.3s;
+}
+
+.drop-zone {
+    border-style: dashed;
+    border-color: #666;
+}
+
+.card.selected {
+    background-color: #FFB300;
+}
+
+.drop-zone.selected {
+    background-color: #616161;
+}
+
+.correct {
+    background: #90ee90;
+}
+
+.wrong {
+    background: #ff6347;
+}
+
+#celebration {
+    margin-top: 20px;
+}
+
+#celebration h2 {
+    font-size: 28px;
+}
+
+#celebration h3 {
+    font-size: 24px;
+    margin: 10px 0;
+}
+
+#celebration button:first-of-type {
+    background-color: #2196F3;
+    color: white;
+}
+
+#celebration button:first-of-type:hover {
+    background-color: #1976D2;
+}
+
+#celebration button:last-of-type {
+    background-color: #FF5722;
+    color: white;
+}
+
+#celebration button:last-of-type:hover {
+    background-color: #F4511E;
+}
+
+#single-word-mode {
+    position: relative;
+    display: none;
+    margin-top: 40px;
+    padding: 20px 0;
+}
+
+#single-word-mode.active {
+    display: block;
+}
+
+#single-word-mode h2 {
+    font-size: 28px;
+}
+
+#single-word-mode p {
+    font-size: 18px;
+}
+
+#single-word-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+    position: relative;
+    min-height: 100px;
+    overflow: visible;
+    width: 100%;
+}
+
+#single-word-list .word-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    cursor: pointer;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #ffffff;
+    position: static;
+    color: #000;
+}
+
+#single-word-list .pinyin {
+    font-size: 20px;
+    color: #666 !important;
+    margin-bottom: 0.5vw;
+    display: block;
+    visibility: visible !important;
+    opacity: 1 !important;
+    font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'SimSun', Arial, sans-serif;
+    position: relative;
+    width: auto;
+    height: auto;
+    min-width: 0;
+    min-height: 0;
+}
+
+#single-word-list .hanzi {
+    font-size: 30px;
+    color: #000 !important;
+    display: block;
+    visibility: visible !important;
+    opacity: 1 !important;
+    font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'SimSun', Arial, sans-serif;
+    position: relative;
+    width: auto;
+    height: auto;
+    min-width: 0;
+    min-height: 0;
+}
+
+#single-word-list .word-item:hover {
+    background-color: #e0e0e0;
+}
+
+#single-word-list .word-item.highlight {
+    background-color: #FFFF99;
+    border-color: #FF9800;
+}
+
+#single-word-list .word-item.highlight .pinyin,
+#single-word-list .word-item.highlight .hanzi {
+    color: #000 !important;
+}
+
+#single-word-display {
+    margin: 20px 0;
+    padding: 10px;
+}
+
+#single-word-display h3 {
+    font-size: 48px;
+    margin: 20px 0;
+}
+
+#single-word-display p {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+#single-animation-gif {
+    display: block;
+    width: 150px;
+    height: 150px;
+    margin: 20px auto;
+    border: 1px solid #ccc;
+}
+
+#single-animation-fallback {
+    margin: 20px 0;
+    text-align: center;
+}
+
+#single-animation {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+}
+
+#single-word-mode button {
+    background-color: #FF5722;
+    color: white;
+    margin: 10px;
+}
+
+#single-word-mode button:hover {
+    background-color: #F4511E;
+}
+
+#article-mode {
+    position: relative;
+    display: none;
+}
+
+#article-mode.active {
+    display: block;
+}
+
+#article-mode h2 {
+    font-size: 28px;
+}
+
+/* 桌面端样式 */
+#article-content {
+    margin: 20px 0;
+    white-space: normal;
+}
+
+#article-content .pinyin-line {
+    font-size: clamp(20px, 4vw, 32px);
+    color: #666;
+    margin-bottom: 0;
+    line-height: 1.2;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5vw;
+}
+
+.char-pair {
+    display: inline-flex;
+    flex-direction: column; /* 垂直排列 */
+    vertical-align: top;
+    margin-right: 0;
+    margin-bottom: 0;
+    min-width: 0;
+    height: clamp(80px, 15vw, 150px);
+    position: relative;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+}
+
+.pinyin {
+    font-size: clamp(16px, 3vw, 32px);
+    line-height: 1;
+    margin-bottom: 0.5vw; /* 拼音和汉字之间的间距 */
+}
+
+.hanzi {
+    font-size: clamp(24px, 4.5vw, 48px);
+    line-height: 1;
+}
+
+.segment {
+    margin-bottom: 1vh;
+    font-size: 0px;
+}
+
+div.segment.highlight {
+    font-size: 5px;
+}
+
+#article-mode button {
+    background-color: #FF5722;
+    color: white;
+}
+
+#article-mode button:hover {
+    background-color: #F4511E;
+}
+
+@media (min-width: 601px) and (max-width: 1000px) {
+    #mode-selection {
+        flex-wrap: wrap;
+        gap: 15px;
+        padding: 0 2vw;
+    }
+    #mode-selection button {
+        padding: 10px 20px;
+        font-size: 18px;
+        min-width: 150px;
+        flex: 1 1 45%;
+        max-width: 48%;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 6vw;
+        margin-bottom: 2vh;
+    }
+    #mode-selection {
+        flex-wrap: wrap;
+        gap: 2vw;
+        padding: 0 1vw;
+    }
+    #mode-selection button {
+        padding: 2vw 4vw;
+        font-size: 4vw;
+        min-width: 0;
+        width: 45%;
+        margin: 1vw 0;
+        box-sizing: border-box;
+    }
+    button {
+        padding: 2.5vw 5vw;
+        font-size: 4.5vw;
+    }
+    #controls {
+        flex-wrap: wrap;
+        gap: 2vw;
+    }
+    #practice-mode h2 {
+        font-size: 5vw;
+    }
+    .flashcard {
+        width: 50vw;
+        height: 50vw;
+    }
+    #flashcard-hanzi {
+        font-size: 12vw;
+    }
+    #flashcard-pinyin, #flashcard-meaning {
+        font-size: 4vw;
+    }
+    #game-mode h2 {
+        font-size: 5vw;
+    }
+    #game-mode p {
+        font-size: 4vw;
+    }
+    #highest-score, #level, #score {
+        font-size: 4vw;
+    }
+    #level-complete h3, #level-total h3, #level-1-errors h3 {
+        font-size: 5vw;
+    }
+    #level-complete p, #level-total p, #level-1-errors p {
+        font-size: 4vw;
+    }
+    #wrong-words-list {
+        font-size: 5vw;
+    }
+    .card, .drop-zone {
+        width: 18vw;
+        height: 18vw;
+        line-height: 18vw;
+        font-size: 7vw;
+    }
+    #celebration h2 {
+        font-size: 6vw;
+    }
+    #celebration h3 {
+        font-size: 5vw;
+    }
+    #single-word-mode h2 {
+        font-size: 5vw;
+    }
+    #single-word-mode p {
+        font-size: 4vw;
+    }
+    #single-word-list {
+        gap: 5vw;
+        min-height: 50vw;
+        flex-wrap: wrap !important;
+    }
+    #single-word-list .word-item {
+        padding: 3vw;
+        background-color: #ffffff;
+    }
+    #single-word-list .pinyin {
+        font-size: 4.5vw;
+        color: #666 !important;
+        margin-bottom: 0.5vw;
+        display: block;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    #single-word-list .hanzi {
+        font-size: 6vw;
+        color: #000 !important;
+        display: block;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    #single-word-display h3 {
+        font-size: 8vw;
+    }
+    #single-word-display p {
+        font-size: 4vw;
+    }
+    #single-animation-gif {
+        width: 35vw;
+        height: 35vw;
+    }
+    #single-animation {
+        width: 35vw;
+        height: 35vw;
+    }
+    #article-mode h2 {
+        font-size: 5vw;
+    }
+    #article-content {
+        line-height: 1.5;
+        white-space: normal;
+    }
+    #article-content .pinyin-line {
+        font-size: clamp(20px, 4vw, 32px);
+        margin-bottom: 0;
+        line-height: 1.2;
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5vw;
+    }
+    .char-pair {
+        display: inline-flex;
+        flex-direction: column; /* 垂直排列 */
+        vertical-align: top;
+        margin-right: 0;
+        margin-bottom: 0;
+        min-width: 0;
+        height: clamp(80px, 15vw, 150px);
+        position: relative;
+        text-align: center;
+        align-items: center;
+        justify-content: center;
+    }
+    .pinyin {
+        font-size: clamp(16px, 3vw, 32px);
+        line-height: 1;
+        margin-bottom: 0.5vw;
+    }
+    .hanzi {
+        font-size: clamp(24px, 4.5vw, 48px);
+        line-height: 1;
+    }
+    div.segment.highlight {
+        font-size: 5px;
+    }
+}

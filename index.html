@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>第七课 - 古诗二首 (Chapter 7 - Two Ancient Poems)</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5.0/dist/hanzi-writer.min.js"></script>
+</head>
+<body>
+    <h1>第七课 - 古诗二首 (Chapter 7 - Two Ancient Poems)</h1>
+    <div id="mode-selection" class="persistent">
+        <button onclick="startArticleMode()">课文模式 (Article Mode)</button>
+        <button onclick="startSingleWordMode()">单字模式 (Single Word Mode)</button>
+        <button onclick="startPracticeMode()">练习模式 (Practice Mode)</button>
+        <button onclick="startGameMode()">游戏模式 (Game Mode)</button>
+    </div>
+    <div id="article-mode" style="display: none;">
+        <h2>课文模式 (Article Mode)</h2>
+        <div id="reading-mode" style="display: none;">
+            <button onclick="playFullArticle()">播放课文 (Play Article)</button>
+            <audio id="full-audio" style="display: none;" preload="auto">
+                <source src="audio/full_article.mp3" type="audio/mp3">
+                您的浏览器不支持音频播放。
+            </audio>
+            <div id="article-content"></div>
+            <audio id="segment-audio" style="display: none;" preload="auto"></audio>
+            <button onclick="exitArticleMode()">返回 (Back)</button>
+        </div>
+    </div>
+    <div id="single-word-mode" style="display: none;">
+        <h2>单字模式 (Single Word Mode)</h2>
+        <p>点击汉字查看详情！(Click a character to view details!)</p>
+        <div id="single-word-list"></div>
+        <div id="single-word-display">
+            <h3 id="single-hanzi"></h3>
+            <p id="single-pinyin"></p>
+            <p id="single-meaning"></p>
+            <p id="single-strokes"></p>
+            <img id="single-animation-gif" src="" alt="笔顺动画 (Stroke Order Animation)" onerror="this.style.display='none'; document.getElementById('single-animation-fallback').style.display='block';">
+            <div id="single-animation-fallback" style="display: none;">
+                <div id="single-animation"></div>
+                <br>
+                <button onclick="animateSingleStrokeOrder()">播放笔顺动画 (Play Stroke Animation)</button>
+            </div>
+        </div>
+        <button onclick="exitSingleWordMode()">返回 (Back)</button>
+    </div>
+    <div id="practice-mode" style="display: none;">
+        <h2>练习模式 (Practice Mode)</h2>
+        <div class="flashcard" onclick="flipCard()">
+            <div class="flashcard-front">
+                <h3 id="flashcard-hanzi"></h3>
+            </div>
+            <div class="flashcard-back">
+                <p id="flashcard-pinyin"></p>
+                <p id="flashcard-meaning"></p>
+            </div>
+        </div>
+        <div id="practice-controls">
+            <button>播放发音 (Play Pronunciation)</button>
+            <button onclick="nextPracticeWord()">下一个 (Next)</button>
+            <button onclick="exitPracticeMode()">返回 (Back)</button>
+        </div>
+    </div>
+    <div id="game-mode" style="display: none;">
+        <h2>游戏模式 (Game Mode)</h2>
+        <p>点击汉字并选择正确的拼音！(Tap a character and select the correct pinyin!)</p>
+        <div id="controls">
+            <button onclick="saveGame()">保存进度 (save)</button>
+            <button onclick="loadGame()">读取进度 (open)</button>
+            <button onclick="startOver()">重新开始 (start over)</button>
+            <button onclick="exitGameMode()">返回 (Back)</button>
+        </div>
+        <div id="highest-score">历史最高分数: 0 (Highest Score: 0)</div>
+        <div id="level">当前关卡: 1-1 (Current Level: 1-1)</div>
+        <div id="score">
+            <span id="current-score">当前关卡分数: 0 (Current Level Score: 0)</span> | 
+            <span id="total-score">累计分数: 0 (Total Score: 0)</span>
+        </div>
+        <div id="level-complete" style="display: none;">
+            <h3 id="level-score"></h3>
+            <p>即将进入下一关...(Proceeding to the next level...)</p>
+        </div>
+        <div id="level-total" style="display: none;">
+            <h3 id="level-total-score"></h3>
+            <p>即将进入下一关...(Proceeding to the next level...)</p>
+        </div>
+        <div id="level-1-errors" style="display: none;">
+            <h3>关卡 1 错误汉字整理 (Level 1 Error Correction)</h3>
+            <p>请将以下错误汉字正确匹配以进入下一关：(Please match the following incorrect characters to proceed:)</p>
+            <div id="wrong-words-list"></div>
+        </div>
+        <div id="hanzi-container"></div>
+        <div id="pinyin-container"></div>
+        <div id="celebration" style="display: none;">
+            <h2>太棒了！你通过了所有关卡！(Great Job! You’ve Passed All Levels!)</h2>
+            <h3 id="final-score"></h3>
+            <h3 id="final-highest-score"></h3>
+            <button onclick="tryAgain()">再试一次 (Try Again)</button>
+            <button onclick="done()">完成 (Done)</button>
+        </div>
+    </div>
+    <audio id="celebrate-sound" src="https://freesound.org/data/previews/159/159402_1676144-lq.mp3" preload="auto"></audio>
+    <audio id="word-audio" style="display: none;" preload="auto"></audio>
+    <script src="script.js"></script>
+</body>
+</html>
