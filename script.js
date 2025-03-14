@@ -13,6 +13,7 @@ let practiceWords = [];
 let singleHanziWriter = null;
 let isFlipped = false;
 let isAudioPlaying = false;
+let isAudioEnabled = false; // 新增标志，追踪音频是否启用
 
 const modeSelection = document.querySelector('#mode-selection.persistent');
 const currentScoreDisplay = document.getElementById('current-score');
@@ -100,6 +101,39 @@ function shuffle(array) {
     return array;
 }
 
+// 启用音频函数
+function enableAudio() {
+    if (!isAudioEnabled) {
+        const audioFiles = [
+            'audio/full_article.mp3',
+            'audio/segment_1.mp3',
+            'audio/segment_2.mp3',
+            'audio/segment_3.mp3',
+            'audio/segment_4.mp3',
+            'audio/segment_5.mp3',
+            'audio/segment_6.mp3',
+            'audio/segment_7.mp3',
+            'audio/segment_8.mp3',
+            'audio/segment_9.mp3',
+            'audio/segment_10.mp3',
+            'audio/segment_11.mp3',
+            'audio/segment_12.mp3',
+            'audio/segment_13.mp3',
+            'audio/segment_14.mp3'
+        ];
+
+        audioFiles.forEach(file => {
+            const audio = new Audio(file);
+            audio.preload = 'auto';
+            audio.load();
+            audioCache[file] = audio;
+        });
+
+        isAudioEnabled = true;
+        console.log('音频已启用');
+    }
+}
+
 // 课文模式
 function startArticleMode() {
     console.log('开始课文模式...');
@@ -113,6 +147,11 @@ function startArticleMode() {
 }
 
 function playFullArticle() {
+    if (!isAudioEnabled) {
+        showAudioPrompt();
+        return;
+    }
+
     console.log('尝试播放全篇音频...');
     fullAudio.pause();
     fullAudio.currentTime = 0;
@@ -141,6 +180,11 @@ function playFullArticle() {
 }
 
 function playSegment(articleId) {
+    if (!isAudioEnabled) {
+        showAudioPrompt();
+        return;
+    }
+
     const startTime = performance.now();
     console.log('开始播放分段音频，articleId:', articleId, '时间:', startTime);
 
@@ -201,6 +245,27 @@ function stopAudioOnClick(event) {
         isAudioPlaying = false;
         document.removeEventListener('click', stopAudioOnClick);
     }
+}
+
+function showAudioPrompt() {
+    const prompt = document.createElement('div');
+    prompt.textContent = '请点击页面以启用音频播放';
+    prompt.style.position = 'fixed';
+    prompt.style.top = '10px';
+    prompt.style.left = '50%';
+    prompt.style.transform = 'translateX(-50%)';
+    prompt.style.background = 'rgba(0, 0, 0, 0.7)';
+    prompt.style.color = 'white';
+    prompt.style.padding = '10px';
+    prompt.style.borderRadius = '5px';
+    prompt.style.zIndex = '1000';
+    document.body.appendChild(prompt);
+
+    document.addEventListener('click', function enableAudioPrompt() {
+        document.body.removeChild(prompt);
+        enableAudio();
+        document.removeEventListener('click', enableAudioPrompt);
+    }, { once: true });
 }
 
 function showArticleContent() {
@@ -323,7 +388,11 @@ function showSingleWordList() {
             singleAnimationGif.style.display = 'block';
             singleAnimationFallback.style.display = 'none';
             wordAudio.src = word.audio;
-            wordAudio.play().catch(error => console.error('单词音频播放失败:', error));
+            if (isAudioEnabled) {
+                wordAudio.play().catch(error => console.error('单词音频播放失败:', error));
+            } else {
+                showAudioPrompt();
+            }
             if (singleHanziWriter) {
                 singleHanziWriter.setCharacter(word.hanzi);
             } else {
@@ -395,7 +464,11 @@ function showPracticeWord() {
     const handlePlayClick = () => {
         clickCount++;
         if (wordAudio.src) {
-            wordAudio.play().catch(error => console.error('单词音频播放失败:', error));
+            if (isAudioEnabled) {
+                wordAudio.play().catch(error => console.error('单词音频播放失败:', error));
+            } else {
+                showAudioPrompt();
+            }
             if (clickCount === 2) {
                 playButton.removeEventListener('click', handlePlayClick);
             }
@@ -703,8 +776,10 @@ function handleLevelComplete() {
                 highestScoreDisplay.textContent = `历史最高分数: ${highestScore} (Highest Score: ${highestScore})`;
             }
             finalHighestScoreDisplay.textContent = `历史最高分数: ${highestScore} (Highest Score: ${highestScore})`;
-            celebrateSound.play();
-            setTimeout(() => { celebrateSound.pause(); celebrateSound.currentTime = 0; }, 3000);
+            if (isAudioEnabled) {
+                celebrateSound.play();
+                setTimeout(() => { celebrateSound.pause(); celebrateSound.currentTime = 0; }, 3000);
+            }
         }, 1000);
     } else if (currentLevel === 1 && currentSubLevel === 3) {
         if (level1WrongWords.length > 0) {
@@ -748,71 +823,29 @@ function handleLevelComplete() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    const interactionPrompt = document.createElement('div');
-    interactionPrompt.textContent = '请点击页面以启用音频播放';
-    interactionPrompt.style.position = 'fixed';
-    interactionPrompt.style.top = '10px';
-    interactionPrompt.style.left = '50%';
-    interactionPrompt.style.transform = 'translateX(-50%)';
-    interactionPrompt.style.background = 'rgba(0, 0, 0, 0.7)';
-    interactionPrompt.style.color = 'white';
-    interactionPrompt.style.padding = '10px';
-    interactionPrompt.style.borderRadius = '5px';
-    document.body.appendChild(interactionPrompt);
+    practiceMode.style.display = 'none';
+    gameMode.style.display = 'none';
+    singleWordMode.style.display = 'none';
+    articleMode.style.display = 'none';
+    readingMode.style.display = 'none';
 
-    document.addEventListener('click', function enableAudio() {
-        document.body.removeChild(interactionPrompt);
-        document.removeEventListener('click', enableAudio);
+    const buttons = modeSelection.querySelectorAll('button');
+    buttons.forEach((button, index) => {
+        switch (index) {
+            case 0:
+                button.addEventListener('click', startArticleMode);
+                break;
+            case 1:
+                button.addEventListener('click', startSingleWordMode);
+                break;
+            case 2:
+                button.addEventListener('click', startPracticeMode);
+                break;
+            case 3:
+                button.addEventListener('click', startGameMode);
+                break;
+        }
+    });
 
-        const audioFiles = [
-            'audio/full_article.mp3',
-            'audio/segment_1.mp3',
-            'audio/segment_2.mp3',
-            'audio/segment_3.mp3',
-            'audio/segment_4.mp3',
-            'audio/segment_5.mp3',
-            'audio/segment_6.mp3',
-            'audio/segment_7.mp3',
-            'audio/segment_8.mp3',
-            'audio/segment_9.mp3',
-            'audio/segment_10.mp3',
-            'audio/segment_11.mp3',
-            'audio/segment_12.mp3',
-            'audio/segment_13.mp3',
-            'audio/segment_14.mp3'
-        ];
-
-        audioFiles.forEach(file => {
-            const audio = new Audio(file);
-            audio.preload = 'auto';
-            audio.load();
-            audioCache[file] = audio;
-        });
-
-        practiceMode.style.display = 'none';
-        gameMode.style.display = 'none';
-        singleWordMode.style.display = 'none';
-        articleMode.style.display = 'none';
-        readingMode.style.display = 'none';
-
-        const buttons = modeSelection.querySelectorAll('button');
-        buttons.forEach(button => {
-            switch (button.textContent.trim()) {
-                case '课文模式' || 'Article Mode':
-                    button.addEventListener('click', startArticleMode);
-                    break;
-                case '练习模式' || 'Practice Mode':
-                    button.addEventListener('click', startPracticeMode);
-                    break;
-                case '游戏模式' || 'Game Mode':
-                    button.addEventListener('click', startGameMode);
-                    break;
-                case '单字模式' || 'Single Word Mode':
-                    button.addEventListener('click', startSingleWordMode);
-                    break;
-            }
-        });
-
-        showSingleWordList();
-    }, { once: true });
+    showSingleWordList();
 });
