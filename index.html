@@ -1,136 +1,134 @@
-function playFullArticle() {
-    console.log('尝试播放全篇音频...');
-    // 显示加载提示
-    const loadingIndicator = document.createElement('div');
-    loadingIndicator.textContent = '正在加载音频，请稍候...';
-    loadingIndicator.style.position = 'fixed';
-    loadingIndicator.style.top = '50%';
-    loadingIndicator.style.left = '50%';
-    loadingIndicator.style.transform = 'translate(-50%, -50%)';
-    loadingIndicator.style.background = 'rgba(0, 0, 0, 0.7)';
-    loadingIndicator.style.color = 'white';
-    loadingIndicator.style.padding = '10px 20px';
-    loadingIndicator.style.borderRadius = '5px';
-    loadingIndicator.style.zIndex = '1000';
-    document.body.appendChild(loadingIndicator);
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>第七课 - 古诗二首 (Chapter 7 - Two Ancient Poems)</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5.0/dist/hanzi-writer.min.js"></script>
+</head>
+<body>
+    <h1>第七课 - 古诗二首 (Chapter 7 - Two Ancient Poems)</h1>
+    <div id="mode-selection" class="persistent">
+        <button onclick="startArticleMode()">课文模式 (Article Mode)</button>
+        <button onclick="startSingleWordMode()">单字模式 (Single Word Mode)</button>
+        <button onclick="startPracticeMode()">练习模式 (Practice Mode)</button>
+        <button onclick="startGameMode()">游戏模式 (Game Mode)</button>
+    </div>
+    <div id="article-mode" style="display: none;">
+        <h2>课文模式 (Article Mode)</h2>
+        <div id="reading-mode" style="display: none;">
+            <button onclick="playFullArticle()">播放课文 (Play Article)</button>
+            <audio id="full-audio" style="display: none;" preload="auto">
+                <source src="audio/full_article.mp3" type="audio/mp3">
+                您的浏览器不支持音频播放。
+            </audio>
+            <div id="article-content"></div>
+            <audio id="segment-audio" style="display: none;" preload="auto"></audio>
+            <button onclick="exitArticleMode()">返回 (Back)</button>
+        </div>
+    </div>
+    <div id="single-word-mode" style="display: none;">
+        <h2>单字模式 (Single Word Mode)</h2>
+        <p>点击汉字查看详情！(Click a character to view details!)</p>
+        <div id="single-word-list"></div>
+        <div id="single-word-display">
+            <h3 id="single-hanzi"></h3>
+            <p id="single-pinyin"></p>
+            <p id="single-meaning"></p>
+            <p id="single-strokes"></p>
+            <img id="single-animation-gif" src="" alt="笔顺动画 (Stroke Order Animation)" onerror="this.style.display='none'; document.getElementById('single-animation-fallback').style.display='block';">
+            <div id="single-animation-fallback" style="display: none;">
+                <div id="single-animation"></div>
+                <br>
+                <button onclick="animateSingleStrokeOrder()">播放笔顺动画 (Play Stroke Animation)</button>
+            </div>
+        </div>
+        <button onclick="exitSingleWordMode()">返回 (Back)</button>
+    </div>
+    <div id="practice-mode" style="display: none;">
+        <h2>练习模式 (Practice Mode)</h2>
+        <div class="flashcard" onclick="flipCard()">
+            <div class="flashcard-front">
+                <h3 id="flashcard-hanzi"></h3>
+            </div>
+            <div class="flashcard-back">
+                <p id="flashcard-pinyin"></p>
+                <p id="flashcard-meaning"></p>
+            </div>
+        </div>
+        <div id="practice-controls">
+            <button>播放发音 (Play Pronunciation)</button>
+            <button onclick="nextPracticeWord()">下一个 (Next)</button>
+            <button onclick="exitPracticeMode()">返回 (Back)</button>
+        </div>
+    </div>
+    <div id="game-mode" style="display: none;">
+        <h2>游戏模式 (Game Mode)</h2>
+        <p>点击汉字并选择正确的拼音！(Tap a character and select the correct pinyin!)</p>
+        <div id="controls">
+            <button onclick="saveGame()">保存进度 (save)</button>
+            <button onclick="loadGame()">读取进度 (open)</button>
+            <button onclick="startOver()">重新开始 (start over)</button>
+            <button onclick="exitGameMode()">返回 (Back)</button>
+        </div>
+        <div id="highest-score">历史最高分数: 0 (Highest Score: 0)</div>
+        <div id="level">当前关卡: 1-1 (Current Level: 1-1)</div>
+        <div id="score">
+            <span id="current-score">当前关卡分数: 0 (Current Level Score: 0)</span> | 
+            <span id="total-score">累计分数: 0 (Total Score: 0)</span>
+        </div>
+        <div id="level-complete" style="display: none;">
+            <h3 id="level-score"></h3>
+            <p>即将进入下一关...(Proceeding to the next level...)</p>
+        </div>
+        <div id="level-total" style="display: none;">
+            <h3 id="level-total-score"></h3>
+            <p>即将进入下一关...(Proceeding to the next level...)</p>
+        </div>
+        <div id="level-1-errors" style="display: none;">
+            <h3>关卡 1 错误汉字整理 (Level 1 Error Correction)</h3>
+            <p>请将以下错误汉字正确匹配以进入下一关：(Please match the following incorrect characters to proceed:)</p>
+            <div id="wrong-words-list"></div>
+        </div>
+        <div id="hanzi-container"></div>
+        <div id="pinyin-container"></div>
+        <div id="celebration" style="display: none;">
+            <h2>太棒了！你通过了所有关卡！(Great Job! You’ve Passed All Levels!)</h2>
+            <h3 id="final-score"></h3>
+            <h3 id="final-highest-score"></h3>
+            <button onclick="tryAgain()">再试一次 (Try Again)</button>
+            <button onclick="done()">完成 (Done)</button>
+        </div>
+    </div>
+    <audio id="celebrate-sound" src="https://freesound.org/data/previews/159/159402_1676144-lq.mp3" preload="auto"></audio>
+    <audio id="word-audio" style="display: none;" preload="auto"></audio>
+    <script src="script.js"></script>
+    <script>
+        // 预加载所有音频文件
+        const audioFiles = [
+            'audio/full_article.mp3',
+            'audio/segment_1.mp3',
+            'audio/segment_2.mp3',
+            'audio/segment_3.mp3',
+            'audio/segment_4.mp3',
+            'audio/segment_5.mp3',
+            'audio/segment_6.mp3',
+            'audio/segment_7.mp3',
+            'audio/segment_8.mp3',
+            'audio/segment_9.mp3',
+            'audio/segment_10.mp3',
+            'audio/segment_11.mp3',
+            'audio/segment_12.mp3',
+            'audio/segment_13.mp3',
+            'audio/segment_14.mp3'
+        ];
 
-    // 停止并重置所有音频
-    fullAudio.pause();
-    fullAudio.currentTime = 0;
-    segmentAudio.pause();
-    segmentAudio.currentTime = 0;
-
-    fullAudio.src = 'audio/full_article.mp3';
-    fullAudio.load();
-    console.log('全篇音频源设置为:', fullAudio.src);
-
-    // 监听音频加载完成事件
-    fullAudio.addEventListener('canplay', function onCanPlay() {
-        fullAudio.removeEventListener('canplay', onCanPlay);
-        document.body.removeChild(loadingIndicator); // 移除加载提示
-        fullAudio.play()
-            .then(() => {
-                console.log('全篇音频播放成功');
-                isAudioPlaying = true;
-                setTimeout(() => {
-                    if (isAudioPlaying) {
-                        document.addEventListener('click', stopAudioOnClick);
-                    }
-                }, 500);
-            })
-            .catch(error => {
-                console.error('全篇音频播放失败:', error);
-                alert('无法播放课文音频，请检查音频文件路径或浏览器权限设置。\n错误: ' + error.message);
-            });
-    }, { once: true });
-
-    // 监听加载错误
-    fullAudio.addEventListener('error', function onError() {
-        console.error('全篇音频加载失败:', fullAudio.error);
-        document.body.removeChild(loadingIndicator); // 移除加载提示
-        alert('全篇音频加载失败，请检查音频文件是否存在。\n错误: ' + fullAudio.error.message);
-    }, { once: true });
-}
-
-function playSegment(articleId) {
-    console.log('尝试播放分段音频，articleId:', articleId);
-    const segment = articleSegments.find(seg => seg.articleId === articleId);
-    if (!segment) {
-        console.error('未找到对应 articleId 的段落:', articleId);
-        return;
-    }
-
-    // 显示加载提示
-    const loadingIndicator = document.createElement('div');
-    loadingIndicator.textContent = '正在加载音频，请稍候...';
-    loadingIndicator.style.position = 'fixed';
-    loadingIndicator.style.top = '50%';
-    loadingIndicator.style.left = '50%';
-    loadingIndicator.style.transform = 'translate(-50%, -50%)';
-    loadingIndicator.style.background = 'rgba(0, 0, 0, 0.7)';
-    loadingIndicator.style.color = 'white';
-    loadingIndicator.style.padding = '10px 20px';
-    loadingIndicator.style.borderRadius = '5px';
-    loadingIndicator.style.zIndex = '1000';
-    document.body.appendChild(loadingIndicator);
-
-    // 停止并重置全篇音频
-    fullAudio.pause();
-    fullAudio.currentTime = 0;
-    console.log('全篇音频已停止以播放分段音频');
-
-    // 移除之前的点击停止监听
-    document.removeEventListener('click', stopAudioOnClick);
-
-    // 移除之前的高亮
-    if (currentHighlightedSegment) {
-        currentHighlightedSegment.classList.remove('highlight');
-    }
-
-    // 设置并高亮当前段落
-    const newHighlightedSegment = articleContent.querySelector(`.segment[data-article-id="${articleId}"]`);
-    if (newHighlightedSegment) {
-        newHighlightedSegment.classList.add('highlight');
-        currentHighlightedSegment = newHighlightedSegment;
-    } else {
-        console.error('未找到对应 DOM 元素:', articleId);
-    }
-
-    // 播放分段音频
-    segmentAudio.src = segment.audio;
-    segmentAudio.load();
-    console.log('分段音频源设置为:', segmentAudio.src);
-
-    // 监听音频加载完成事件
-    segmentAudio.addEventListener('canplay', function onCanPlay() {
-        segmentAudio.removeEventListener('canplay', onCanPlay);
-        document.body.removeChild(loadingIndicator); // 移除加载提示
-        segmentAudio.play()
-            .then(() => {
-                console.log('分段音频播放成功:', segment.audio);
-                isAudioPlaying = true;
-                // 音频播放结束时移除高亮
-                segmentAudio.onended = () => {
-                    newHighlightedSegment.classList.remove('highlight');
-                    currentHighlightedSegment = null;
-                    isAudioPlaying = false;
-                };
-            })
-            .catch(error => {
-                console.error('分段音频播放失败:', error);
-                if (error.message.includes('interrupted by a call to pause')) {
-                    console.warn('播放被中断，正在重试...');
-                    segmentAudio.play();
-                } else {
-                    alert('无法播放分段音频，请检查音频文件或网络连接。\n错误: ' + error.message);
-                }
-            });
-    }, { once: true });
-
-    // 监听加载错误
-    segmentAudio.addEventListener('error', function onError() {
-        console.error('分段音频加载失败:', segmentAudio.error);
-        document.body.removeChild(loadingIndicator); // 移除加载提示
-        alert('分段音频加载失败，请检查音频文件是否存在。\n错误: ' + segmentAudio.error.message);
-    }, { once: true });
-}
+        audioFiles.forEach(file => {
+            const audio = new Audio(file);
+            audio.preload = 'auto';
+            audio.load();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'920053179adfbff6',t:'MTc0MTkxOTE2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
