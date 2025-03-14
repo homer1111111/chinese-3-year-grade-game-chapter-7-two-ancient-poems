@@ -146,6 +146,7 @@ function shuffle(array) {
 }
 
 // 课文模式
+
 function startArticleMode() {
     console.log('开始课文模式...');
     practiceMode.style.display = 'none';
@@ -186,6 +187,7 @@ function playFullArticle() {
 }
 
 function playSegment(articleId) {
+    console.log('尝试播放分段音频，articleId:', articleId);
     const segment = articleSegments.find(seg => seg.articleId === articleId);
     if (!segment) {
         console.error('未找到对应 articleId 的段落:', articleId);
@@ -217,6 +219,7 @@ function playSegment(articleId) {
     // 播放分段音频
     segmentAudio.src = segment.audio;
     segmentAudio.load();
+    console.log('分段音频源设置为:', segmentAudio.src);
     segmentAudio.play()
         .then(() => {
             console.log('分段音频播放成功:', segment.audio);
@@ -232,7 +235,7 @@ function playSegment(articleId) {
             console.error('分段音频播放失败:', error);
             if (error.message.includes('interrupted by a call to pause')) {
                 console.warn('播放被中断，正在重试...');
-                segmentAudio.play(); // 尝试重播
+                segmentAudio.play();
             } else {
                 alert('无法播放分段音频，请检查音频文件或网络连接。\n错误: ' + error.message);
             }
@@ -298,9 +301,10 @@ function showArticleContent() {
 
     const segments = articleContent.querySelectorAll('.segment');
     segments.forEach(segment => {
+        const articleId = segment.getAttribute('data-article-id');
+        console.log('绑定点击事件，段落 articleId:', articleId);
         segment.addEventListener('click', () => {
-            const articleId = segment.getAttribute('data-article-id');
-            console.log('点击段落，articleId:', articleId);
+            console.log('点击段落，触发播放:', articleId);
             playSegment(articleId);
         });
     });
