@@ -266,6 +266,7 @@ button {
 
 .correct {
     background: #90ee90;
+    font-size: 24px; /* 确保匹配成功后字体大小与原始一致 */
 }
 
 .wrong {
@@ -596,6 +597,9 @@ div.segment.highlight {
         align-items: center;
         justify-content: center;
         padding: 2px;
+    }
+    .correct {
+        font-size: 7vw; /* 小屏幕下恢复原始字体大小 */
     }
     .drop-zone .pinyin-text {
         font-size: 6vw;
