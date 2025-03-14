@@ -229,12 +229,12 @@ button {
 }
 
 .card, .drop-zone {
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
     line-height: 1.2;
     margin: 10px;
     border: 2px solid #ccc;
-    font-size: 16px;
+    font-size: 24px;
     text-align: center;
     background: #f9f9f9;
     transition: background-color 0.3s;
@@ -252,7 +252,7 @@ button {
 }
 
 .drop-zone .pinyin-text {
-    font-size: 14px;
+    font-size: 20px;
     line-height: 1.1;
 }
 
@@ -585,10 +585,10 @@ div.segment.highlight {
         font-size: 5vw;
     }
     .card, .drop-zone {
-        width: 18vw;
-        height: 18vw;
+        width: 24vw;
+        height: 24vw;
         line-height: 1.2;
-        font-size: 4vw;
+        font-size: 7vw;
         margin: 5px;
         overflow-wrap: break-word;
         overflow: hidden;
@@ -596,6 +596,10 @@ div.segment.highlight {
         align-items: center;
         justify-content: center;
         padding: 2px;
+    }
+    .drop-zone .pinyin-text {
+        font-size: 6vw;
+        line-height: 1.1;
     }
     #celebration h2 {
         font-size: 6vw;
