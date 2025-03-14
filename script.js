@@ -57,20 +57,20 @@ let currentHighlightedSegment = null;
 highestScoreDisplay.textContent = `历史最高分数: ${highestScore} (Highest Score: ${highestScore})`;
 
 const articleSegments = [
-    { text: '静夜思', audio: 'audio/segment_1a.mp3', articleId: 'article_1a' },
-    { text: 'Thoughts on a Silent Night', audio: 'audio/segment_1b.mp3', articleId: 'article_1b', isEnglish: true },
-    { text: '(唐)李白', audio: 'audio/segment_2.mp3', articleId: 'article_2' },
-    { text: '床前明月光，', audio: 'audio/segment_3.mp3', articleId: 'article_3' },
-    { text: '疑是地上霜。', audio: 'audio/segment_4.mp3', articleId: 'article_4' },
-    { text: '举头望明月，', audio: 'audio/segment_5.mp3', articleId: 'article_5' },
-    { text: '低头思故乡。', audio: 'audio/segment_6.mp3', articleId: 'article_6' },
-    { text: '登鹳雀楼', audio: 'audio/segment_7a.mp3', articleId: 'article_7a' },
-    { text: 'At Heron Lodge', audio: 'audio/segment_7b.mp3', articleId: 'article_7b', isEnglish: true },
-    { text: '(唐)王之涣', audio: 'audio/segment_8.mp3', articleId: 'article_8' },
-    { text: '白日依山尽，', audio: 'audio/segment_9.mp3', articleId: 'article_9' },
-    { text: '黄河入海流。', audio: 'audio/segment_10.mp3', articleId: 'article_10' },
-    { text: '欲穷千里目，', audio: 'audio/segment_11.mp3', articleId: 'article_11' },
-    { text: '更上一层楼。', audio: 'audio/segment_12.mp3', articleId: 'article_12' }
+    { text: '静夜思', audio: 'audio/segment_1.mp3', articleId: 'full_article' },
+    { text: 'Thoughts on a Silent Night', audio: 'audio/segment_2.mp3', articleId: 'article_2', isEnglish: true },
+    { text: '(唐)李白', audio: 'audio/segment_3.mp3', articleId: 'article_3' },
+    { text: '床前明月光，', audio: 'audio/segment_4.mp3', articleId: 'article_4' },
+    { text: '疑是地上霜。', audio: 'audio/segment_5.mp3', articleId: 'article_5' },
+    { text: '举头望明月，', audio: 'audio/segment_6.mp3', articleId: 'article_6' },
+    { text: '低头思故乡。', audio: 'audio/segment_7.mp3', articleId: 'article_7' },
+    { text: '登鹳雀楼', audio: 'audio/segment_8.mp3', articleId: 'article_8' },
+    { text: 'At Heron Lodge', audio: 'audio/segment_9.mp3', articleId: 'article_9', isEnglish: true },
+    { text: '(唐)王之涣', audio: 'audio/segment_10.mp3', articleId: 'article_10' },
+    { text: '白日依山尽，', audio: 'audio/segment_11.mp3', articleId: 'article_11' },
+    { text: '黄河入海流。', audio: 'audio/segment_12.mp3', articleId: 'article_12' },
+    { text: '欲穷千里目，', audio: 'audio/segment_13.mp3', articleId: 'article_13' },
+    { text: '更上一层楼。', audio: 'audio/segment_14.mp3', articleId: 'article_14' }
 ];
 
 const allWords = {
