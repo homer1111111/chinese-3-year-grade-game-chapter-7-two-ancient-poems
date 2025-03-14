@@ -57,7 +57,7 @@ let currentHighlightedSegment = null;
 highestScoreDisplay.textContent = `历史最高分数: ${highestScore} (Highest Score: ${highestScore})`;
 
 const articleSegments = [
-    { text: '静夜思', audio: 'audio/segment_1.mp3', articleId: 'segment_1' },
+    { text: '静夜思', audio: 'audio/segment_1.mp3', articleId: 'article_1' },
     { text: 'Thoughts on a Silent Night', audio: 'audio/segment_2.mp3', articleId: 'article_2', isEnglish: true },
     { text: '(唐)李白', audio: 'audio/segment_3.mp3', articleId: 'article_3' },
     { text: '床前明月光，', audio: 'audio/segment_4.mp3', articleId: 'article_4' },
