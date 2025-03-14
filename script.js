@@ -159,6 +159,20 @@ function startArticleMode() {
 
 function playFullArticle() {
     console.log('尝试播放全篇音频...');
+    // 显示加载提示
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.textContent = '正在加载音频，请稍候...';
+    loadingIndicator.style.position = 'fixed';
+    loadingIndicator.style.top = '50%';
+    loadingIndicator.style.left = '50%';
+    loadingIndicator.style.transform = 'translate(-50%, -50%)';
+    loadingIndicator.style.background = 'rgba(0, 0, 0, 0.7)';
+    loadingIndicator.style.color = 'white';
+    loadingIndicator.style.padding = '10px 20px';
+    loadingIndicator.style.borderRadius = '5px';
+    loadingIndicator.style.zIndex = '1000';
+    document.body.appendChild(loadingIndicator);
+
     // 停止并重置所有音频
     fullAudio.pause();
     fullAudio.currentTime = 0;
@@ -172,6 +186,7 @@ function playFullArticle() {
     // 监听音频加载完成事件
     fullAudio.addEventListener('canplay', function onCanPlay() {
         fullAudio.removeEventListener('canplay', onCanPlay); // 移除监听，避免重复触发
+        document.body.removeChild(loadingIndicator); // 移除加载提示
         fullAudio.play()
             .then(() => {
                 console.log('全篇音频播放成功');
@@ -184,6 +199,7 @@ function playFullArticle() {
             })
             .catch(error => {
                 console.error('全篇音频播放失败:', error);
+                document.body.removeChild(loadingIndicator); // 移除加载提示
                 alert('无法播放课文音频，请检查音频文件路径或浏览器权限设置。\n错误: ' + error.message);
             });
     }, { once: true });
@@ -191,6 +207,7 @@ function playFullArticle() {
     // 监听加载错误
     fullAudio.addEventListener('error', function onError() {
         console.error('全篇音频加载失败:', fullAudio.error);
+        document.body.removeChild(loadingIndicator); // 移除加载提示
         alert('全篇音频加载失败，请检查音频文件是否存在。\n错误: ' + fullAudio.error.message);
     }, { once: true });
 }
@@ -202,6 +219,20 @@ function playSegment(articleId) {
         console.error('未找到对应 articleId 的段落:', articleId);
         return;
     }
+
+    // 显示加载提示
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.textContent = '正在加载音频，请稍候...';
+    loadingIndicator.style.position = 'fixed';
+    loadingIndicator.style.top = '50%';
+    loadingIndicator.style.left = '50%';
+    loadingIndicator.style.transform = 'translate(-50%, -50%)';
+    loadingIndicator.style.background = 'rgba(0, 0, 0, 0.7)';
+    loadingIndicator.style.color = 'white';
+    loadingIndicator.style.padding = '10px 20px';
+    loadingIndicator.style.borderRadius = '5px';
+    loadingIndicator.style.zIndex = '1000';
+    document.body.appendChild(loadingIndicator);
 
     // 停止并重置全篇音频
     fullAudio.pause();
@@ -232,7 +263,8 @@ function playSegment(articleId) {
 
     // 监听音频加载完成事件
     segmentAudio.addEventListener('canplay', function onCanPlay() {
-        segmentAudio.removeEventListener('canplay', onCanPlay); // 移除监听，避免重复触发
+        segmentAudio.removeEventListener('canplay', onCanPlay);
+        document.body.removeChild(loadingIndicator); // 移除加载提示
         segmentAudio.play()
             .then(() => {
                 console.log('分段音频播放成功:', segment.audio);
@@ -246,6 +278,7 @@ function playSegment(articleId) {
             })
             .catch(error => {
                 console.error('分段音频播放失败:', error);
+                document.body.removeChild(loadingIndicator); // 移除加载提示
                 if (error.message.includes('interrupted by a call to pause')) {
                     console.warn('播放被中断，正在重试...');
                     segmentAudio.play();
@@ -258,6 +291,7 @@ function playSegment(articleId) {
     // 监听加载错误
     segmentAudio.addEventListener('error', function onError() {
         console.error('分段音频加载失败:', segmentAudio.error);
+        document.body.removeChild(loadingIndicator); // 移除加载提示
         alert('分段音频加载失败，请检查音频文件是否存在。\n错误: ' + segmentAudio.error.message);
     }, { once: true });
 }
@@ -674,21 +708,6 @@ function setLevel(level, subLevel) {
     });
 
     bindTapEvents();
-    adjustPinyinFontSize(); // 动态调整拼音字体大小
-}
-
-function adjustPinyinFontSize() {
-    const dropZones = document.querySelectorAll('.drop-zone');
-    dropZones.forEach(zone => {
-        const pinyinText = zone.textContent;
-        if (pinyinText.length > 5) {
-            zone.style.fontSize = '12px';
-        } else if (pinyinText.length > 3) {
-            zone.style.fontSize = '14px';
-        } else {
-            zone.style.fontSize = '16px';
-        }
-    });
 }
 
 function bindTapEvents() {
