@@ -147,7 +147,7 @@ function shuffle(array) {
 
 // 课文模式
 function startArticleMode() {
-    console.log('Starting Article Mode');
+    console.log('开始课文模式...');
     practiceMode.style.display = 'none';
     gameMode.style.display = 'none';
     singleWordMode.style.display = 'none';
@@ -158,13 +158,20 @@ function startArticleMode() {
 }
 
 function playFullArticle() {
-    console.log('Attempting to play full article audio...');
+    console.log('尝试播放全篇音频...');
+    // 停止并重置所有音频
+    fullAudio.pause();
+    fullAudio.currentTime = 0;
+    segmentAudio.pause();
+    segmentAudio.currentTime = 0;
+
     fullAudio.src = 'audio/full_article.mp3';
     fullAudio.load();
-    console.log('Full audio source set to:', fullAudio.src);
+    console.log('全篇音频源设置为:', fullAudio.src);
+
     fullAudio.play()
         .then(() => {
-            console.log('Full article audio playing successfully');
+            console.log('全篇音频播放成功');
             isAudioPlaying = true;
             setTimeout(() => {
                 if (isAudioPlaying) {
@@ -173,64 +180,78 @@ function playFullArticle() {
             }, 500);
         })
         .catch(error => {
-            console.error('Full audio play failed:', error);
-            alert('无法播放课文音频，请检查浏览器权限设置或确认音频文件是否存在。\nError: ' + error.message);
+            console.error('全篇音频播放失败:', error);
+            alert('无法播放课文音频，请检查音频文件路径或浏览器权限设置。\n错误: ' + error.message);
         });
 }
 
 function playSegment(articleId) {
     const segment = articleSegments.find(seg => seg.articleId === articleId);
     if (!segment) {
-        console.error('Segment not found for articleId:', articleId);
+        console.error('未找到对应 articleId 的段落:', articleId);
         return;
     }
 
-    if (!fullAudio.paused) {
-        fullAudio.pause();
-        fullAudio.currentTime = 0;
-        console.log('Full article audio stopped for segment play');
-    }
+    // 停止并重置全篇音频
+    fullAudio.pause();
+    fullAudio.currentTime = 0;
+    console.log('全篇音频已停止以播放分段音频');
 
+    // 移除之前的点击停止监听
     document.removeEventListener('click', stopAudioOnClick);
 
+    // 移除之前的高亮
     if (currentHighlightedSegment) {
         currentHighlightedSegment.classList.remove('highlight');
     }
-    const newHighlightedSegment = articleContent.querySelector(`.segment[data-article-id="${articleId}"]`);
-    newHighlightedSegment.classList.add('highlight');
-    currentHighlightedSegment = newHighlightedSegment;
 
+    // 设置并高亮当前段落
+    const newHighlightedSegment = articleContent.querySelector(`.segment[data-article-id="${articleId}"]`);
+    if (newHighlightedSegment) {
+        newHighlightedSegment.classList.add('highlight');
+        currentHighlightedSegment = newHighlightedSegment;
+    } else {
+        console.error('未找到对应 DOM 元素:', articleId);
+    }
+
+    // 播放分段音频
     segmentAudio.src = segment.audio;
     segmentAudio.load();
     segmentAudio.play()
         .then(() => {
-            console.log('Segment audio playing successfully');
+            console.log('分段音频播放成功:', segment.audio);
             isAudioPlaying = true;
-            setTimeout(() => {
-                if (isAudioPlaying) {
-                    document.addEventListener('click', stopAudioOnClick);
-                }
-            }, 500);
+            // 音频播放结束时移除高亮
+            segmentAudio.onended = () => {
+                newHighlightedSegment.classList.remove('highlight');
+                currentHighlightedSegment = null;
+                isAudioPlaying = false;
+            };
         })
         .catch(error => {
-            console.error('Segment audio play failed:', error);
+            console.error('分段音频播放失败:', error);
             if (error.message.includes('interrupted by a call to pause')) {
-                console.warn('Playback interrupted, retrying...');
-                segmentAudio.play();
+                console.warn('播放被中断，正在重试...');
+                segmentAudio.play(); // 尝试重播
             } else {
-                alert('无法播放分段音频，请检查音频文件或网络连接。\nError: ' + error.message);
+                alert('无法播放分段音频，请检查音频文件或网络连接。\n错误: ' + error.message);
             }
         });
 }
 
 function stopAudioOnClick(event) {
     if (!event.target.closest('#play-article') && !event.target.closest('.segment')) {
-        fullAudio.pause();
-        fullAudio.currentTime = 0;
-        segmentAudio.pause();
-        segmentAudio.currentTime = 0;
+        if (!fullAudio.paused) {
+            fullAudio.pause();
+            fullAudio.currentTime = 0;
+            console.log('全篇音频被点击停止');
+        }
+        if (!segmentAudio.paused) {
+            segmentAudio.pause();
+            segmentAudio.currentTime = 0;
+            console.log('分段音频被点击停止');
+        }
         isAudioPlaying = false;
-        console.log('Audio stopped by click');
         document.removeEventListener('click', stopAudioOnClick);
     }
 }
@@ -253,10 +274,8 @@ function showArticleContent() {
         let pinyinLine = '';
 
         if (segment.isEnglish) {
-            // For English segments, display text without pinyin
             pinyinLine = `<span class="english-text">${segment.text}</span>`;
         } else {
-            // For Chinese segments, include pinyin
             for (let i = 0; i < chars.length; i++) {
                 if (punctuation.includes(chars[i])) {
                     pinyinLine += `<span class="char-pair"><span class="pinyin"></span><span class="hanzi">${chars[i]}</span></span>`;
@@ -275,12 +294,13 @@ function showArticleContent() {
     });
 
     articleContent.innerHTML = result;
-    console.log('Article content generated:', articleContent.innerHTML);
+    console.log('生成的文章内容:', articleContent.innerHTML);
 
     const segments = articleContent.querySelectorAll('.segment');
     segments.forEach(segment => {
         segment.addEventListener('click', () => {
             const articleId = segment.getAttribute('data-article-id');
+            console.log('点击段落，articleId:', articleId);
             playSegment(articleId);
         });
     });
@@ -300,7 +320,7 @@ function exitArticleMode() {
 
 // 单字模式
 function startSingleWordMode() {
-    console.log('Starting Single Word Mode');
+    console.log('开始单字模式...');
     fullAudio.pause();
     fullAudio.currentTime = 0;
     segmentAudio.pause();
@@ -321,7 +341,7 @@ function startSingleWordMode() {
 }
 
 function showSingleWordList() {
-    console.log('Rendering Single Word List');
+    console.log('渲染单字列表...');
     let clickCountMap = new Map();
 
     singleWordList.innerHTML = allUniqueWords.map(word => `
@@ -356,7 +376,7 @@ function showSingleWordList() {
             singleAnimationGif.style.display = 'block';
             singleAnimationFallback.style.display = 'none';
             wordAudio.src = word.audio;
-            wordAudio.play().catch(error => console.error('Word audio play failed:', error));
+            wordAudio.play().catch(error => console.error('单词音频播放失败:', error));
             if (singleHanziWriter) {
                 singleHanziWriter.setCharacter(word.hanzi);
             } else {
@@ -373,7 +393,7 @@ function showSingleWordList() {
 
             if (clickCount === 2) {
                 event.currentTarget.removeEventListener('click', handleWordClick);
-                console.log(`Removed click listener for ${hanzi}`);
+                console.log(`移除 ${hanzi} 的点击监听`);
             }
         }
     };
@@ -394,7 +414,7 @@ function exitSingleWordMode() {
 
 // 练习模式
 function startPracticeMode() {
-    console.log('Starting Practice Mode');
+    console.log('开始练习模式...');
     fullAudio.pause();
     fullAudio.currentTime = 0;
     segmentAudio.pause();
@@ -415,7 +435,7 @@ function startPracticeMode() {
 }
 
 function showPracticeWord() {
-    console.log('Rendering Practice Word');
+    console.log('渲染练习单词...');
     const word = practiceWords[practiceIndex];
     flashcardHanzi.textContent = word.hanzi;
     flashcardPinyin.textContent = `拼音: ${word.pinyin} (Pinyin: ${word.pinyin})`;
@@ -429,13 +449,13 @@ function showPracticeWord() {
     const handlePlayClick = () => {
         clickCount++;
         if (wordAudio.src) {
-            wordAudio.play().catch(error => console.error('Word audio play failed:', error));
+            wordAudio.play().catch(error => console.error('单词音频播放失败:', error));
             if (clickCount === 2) {
                 playButton.removeEventListener('click', handlePlayClick);
-                console.log(`Removed click listener for ${word.hanzi} audio`);
+                console.log(`移除 ${word.hanzi} 音频的点击监听`);
             }
         } else {
-            console.error('Word audio source not set');
+            console.error('单词音频源未设置');
         }
     };
     playButton.removeEventListener('click', handlePlayClick);
@@ -467,7 +487,7 @@ function exitPracticeMode() {
 
 // 游戏模式
 function startGameMode() {
-    console.log('Starting Game Mode');
+    console.log('开始游戏模式...');
     fullAudio.pause();
     fullAudio.currentTime = 0;
     segmentAudio.pause();
@@ -578,7 +598,7 @@ function fixLevel1Errors() {
 }
 
 function setLevel(level, subLevel) {
-    console.log(`Setting Level ${level}-${subLevel} for Game Mode`);
+    console.log(`设置游戏模式关卡 ${level}-${subLevel}`);
     currentLevel = level;
     currentSubLevel = subLevel;
     levelDisplay.textContent = currentLevel === 3 ? 
@@ -796,22 +816,22 @@ document.addEventListener('DOMContentLoaded', function() {
         switch (button.textContent.trim()) {
             case '课文模式' || 'Article Mode':
                 button.addEventListener('click', startArticleMode);
-                console.log('Bound Article Mode to button:', button.textContent);
+                console.log('绑定课文模式到按钮:', button.textContent);
                 break;
             case '练习模式' || 'Practice Mode':
                 button.addEventListener('click', startPracticeMode);
-                console.log('Bound Practice Mode to button:', button.textContent);
+                console.log('绑定练习模式到按钮:', button.textContent);
                 break;
             case '游戏模式' || 'Game Mode':
                 button.addEventListener('click', startGameMode);
-                console.log('Bound Game Mode to button:', button.textContent);
+                console.log('绑定游戏模式到按钮:', button.textContent);
                 break;
             case '单字模式' || 'Single Word Mode':
                 button.addEventListener('click', startSingleWordMode);
-                console.log('Bound Single Word Mode to button:', button.textContent);
+                console.log('绑定单字模式到按钮:', button.textContent);
                 break;
             default:
-                console.warn('Unrecognized button text:', button.textContent);
+                console.warn('未识别的按钮文本:', button.textContent);
         }
     });
 
