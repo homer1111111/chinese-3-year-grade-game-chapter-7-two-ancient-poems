@@ -645,11 +645,26 @@ function setLevel(level, subLevel) {
         const zone = document.createElement('div');
         zone.className = 'drop-zone';
         zone.setAttribute('data-pinyin', word.pinyin);
-        zone.textContent = word.pinyin;
+        zone.innerHTML = `<span class="pinyin-text">${word.pinyin}</span>`;
         pinyinContainer.appendChild(zone);
     });
 
     bindTapEvents();
+    adjustPinyinFontSize(); // 动态调整拼音字体大小
+}
+
+function adjustPinyinFontSize() {
+    const dropZones = document.querySelectorAll('.drop-zone');
+    dropZones.forEach(zone => {
+        const pinyinText = zone.textContent;
+        if (pinyinText.length > 5) {
+            zone.style.fontSize = '12px';
+        } else if (pinyinText.length > 3) {
+            zone.style.fontSize = '14px';
+        } else {
+            zone.style.fontSize = '16px';
+        }
+    });
 }
 
 function bindTapEvents() {
